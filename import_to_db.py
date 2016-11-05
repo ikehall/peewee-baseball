@@ -35,6 +35,7 @@ class GameFinder(Thread):
 
 
 def discover_games(month, year, level='mlb', start_date = 1):
+            #gd2.mlb.com/components/game
     url = '/'.join(['http://12.130.102.59/components/game',level])
     yearstr = '_'.join(['year',str(year)])
     if month>=10:
