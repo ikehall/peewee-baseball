@@ -1,6 +1,8 @@
 from peewee import *
 
-database = MySQLDatabase('pbp', **{'passwd': 'thisisatotallyrandompasswordnoreally', 'user': 'bob'})
+#database = MySQLDatabase('pbp', **{'passwd': 'thisisatotallyrandompasswordnoreally', 'user': 'bob'})
+
+database = SqliteDatabase('/home/isaac/pfx.db')
 
 class UnknownFieldType(object):
     pass
@@ -12,146 +14,151 @@ class BaseModel(Model):
 class Players(BaseModel):
     eliasid = IntegerField(primary_key=True)
     first = CharField()
-    height = IntegerField()
-    lahmanid = CharField()
+    height = IntegerField(null=True)
+    lahmanid = CharField(null=True)
     last = CharField()
     throws = CharField()
 
-    class Meta:
-        db_table = 'players'
+    #class Meta:
+        #db_table = 'players'
 
 class GameTypes(BaseModel):
     type = CharField()
-    desc = CharField()
+    desc = CharField(null=True)
     
-    class Meta:
-        db_table = 'game_types'
+    #class Meta:
+        #db_table = 'game_types'
 
 class Stadiums(BaseModel):
-    elevation = IntegerField()
-    lat = FloatField()
-    long = FloatField()
+    elevation = IntegerField(null=True)
+    lat = FloatField(null=True)
+    long = FloatField(null=True)
     name = CharField()
 
-    class Meta:
-        db_table = 'stadiums'
+    #class Meta:
+        #db_table = 'stadiums'
 
 class Umpires(BaseModel):
     first = CharField()
     last = CharField()
 
-    class Meta:
-        db_table = 'umpires'
+    #class Meta:
+        #db_table = 'umpires'
 
 
 class Games(BaseModel):
-    away = CharField()
-    date = DateField()
-    errors_away = IntegerField()
-    errors_home = IntegerField()
-    game = IntegerField()
+    away = CharField(null=True)
+    date = DateField(null=True)
+    errors_away = IntegerField(null=True)
+    errors_home = IntegerField(null=True)
+    game = IntegerField(null=True)
     game_pk = IntegerField()
-    gid_string = CharField()
-    hits_away = IntegerField()
-    hits_home = IntegerField()
-    home = CharField()
-    local_time = TimeField()
-    manager_away = CharField()
-    manager_home = CharField()
-    runs_away = IntegerField()
-    runs_home = IntegerField()
-    temperature = IntegerField()
-    type = ForeignKeyField(rel_model=GameTypes, db_column='type')
-    ump = ForeignKeyField(rel_model=Umpires, db_column='ump')
-    venue = ForeignKeyField(rel_model=Stadiums, db_column='venue')
-    wind = IntegerField()
-    wind_dir = CharField()
+    gid_string = CharField(null=True)
+    hits_away = IntegerField(null=True)
+    hits_home = IntegerField(null=True)
+    home = CharField(null=True)
+    local_time = TimeField(null=True)
+    manager_away = CharField(null=True)
+    manager_home = CharField(null=True)
+    runs_away = IntegerField(null=True)
+    runs_home = IntegerField(null=True)
+    temperature = IntegerField(null=True)
+    type = ForeignKeyField(GameTypes, related_name='bgames', null=True)
+    ump = ForeignKeyField(Umpires, related_name='ugames', null=True)
+    venue = ForeignKeyField(Stadiums, related_name='vgames', null=True)
+    wind = IntegerField(null=True)
+    wind_dir = CharField(null=True)
 
-    class Meta:
-        db_table = 'games'
+    #class Meta:
+        #db_table = 'games'
+        
 
 class Atbats(BaseModel):
-    ball = IntegerField()
-    batter = ForeignKeyField(rel_model=Players, db_column='batter')
-    bbtype = CharField()
-    def2 = ForeignKeyField(rel_model=Players, db_column='def2')
-    def3 = ForeignKeyField(rel_model=Players, db_column='def3')
-    def4 = ForeignKeyField(rel_model=Players, db_column='def4')
-    def5 = ForeignKeyField(rel_model=Players, db_column='def5')
-    def6 = ForeignKeyField(rel_model=Players, db_column='def6')
-    def7 = ForeignKeyField(rel_model=Players, db_column='def7')
-    def8 = ForeignKeyField(rel_model=Players, db_column='def8')
-    def9 = ForeignKeyField(rel_model=Players, db_column='def9')
-    des = CharField()
-    event = CharField()
-    gameid = ForeignKeyField(rel_model=Games, db_column='gameid')
-    half = IntegerField()
-    hit_type = CharField()
-    hit_x = FloatField()
-    hit_y = FloatField()
-    inning = IntegerField()
+    ball = IntegerField(null=True)
+    batter = ForeignKeyField(Players, related_name='patbats')
+    bbtype = CharField(null=True)
+    def2 = ForeignKeyField(Players, related_name='def_c_ab',null=True)
+    def3 = ForeignKeyField(Players, related_name='def_1b_ab',null=True)
+    def4 = ForeignKeyField(Players, related_name='def_2b_ab',null=True)
+    def5 = ForeignKeyField(Players, related_name='def_3b_ab',null=True)
+    def6 = ForeignKeyField(Players, related_name='def_ss_ab',null=True)
+    def7 = ForeignKeyField(Players, related_name='def_lf_ab',null=True)
+    def8 = ForeignKeyField(Players, related_name='def_cf_ab',null=True)
+    def9 = ForeignKeyField(Players, related_name='def_rf_ab',null=True)
+    des = CharField(null=True)
+    event = CharField(null=True)
+    gameid = ForeignKeyField(Games, related_name='ab_in_game')
+    half = IntegerField(null=True)
+    hit_type = CharField(null=True)
+    hit_x = FloatField(null=True)
+    hit_y = FloatField(null=True)
+    inning = IntegerField(null=True)
     num = IntegerField()
-    outs = IntegerField()
-    pitcher = ForeignKeyField(rel_model=Players, db_column='pitcher')
-    pitcher_ab_seq = IntegerField()
-    pitcher_seq = IntegerField()
-    stand = CharField()
-    start_time = DateTimeField()
-    strike = IntegerField()
-    sz_bot = FloatField()
-    sz_top = FloatField()
+    outs = IntegerField(null=True)
+    pitcher = ForeignKeyField(Players, related_name='pitched_ab',null=True)
+    pitcher_ab_seq = IntegerField(null=True)
+    pitcher_seq = IntegerField(null=True)
+    stand = CharField(null=True)
+    start_time = DateTimeField(null=True)
+    strike = IntegerField(null=True)
+    sz_bot = FloatField(null=True)
+    sz_top = FloatField(null=True)
 
-    class Meta:
-        db_table = 'atbats'
+    #class Meta:
+        #db_table = 'atbats'
 
 class PitchTypes(BaseModel):
     pitch = CharField()
 
-    class Meta:
-        db_table = 'pitch_types'
+    #class Meta:
+        #db_table = 'pitch_types'
 
 class Pitches(BaseModel):
-    ab = ForeignKeyField(db_column='ab_id', rel_model=Atbats)
-    air_density = FloatField()
-    ax = FloatField()
-    ay = FloatField()
-    az = FloatField()
-    ball = IntegerField()
-    break_angle = FloatField()
-    break_length = FloatField()
-    break_y = FloatField()
-    des = CharField()
-    end_speed = FloatField()
+    ab = ForeignKeyField(Atbats, related_name='ab_pitched')
+    air_density = FloatField(null=True)
+    ax = FloatField(null=True)
+    ay = FloatField(null=True)
+    az = FloatField(null=True)
+    ball = IntegerField(null=True)
+    break_angle = FloatField(null=True)
+    break_length = FloatField(null=True)
+    break_y = FloatField(null=True)
+    des = CharField(null=True)
+    end_speed = FloatField(null=True)
     ingameid = IntegerField()
-    my_pfx_x = FloatField()
-    my_pfx_z = FloatField()
-    my_pitch_type = IntegerField()
-    nasty = IntegerField()
-    on_1b = ForeignKeyField(rel_model=Players, db_column='on_1b')
-    on_2b = ForeignKeyField(rel_model=Players, db_column='on_2b')
-    on_3b = ForeignKeyField(rel_model=Players, db_column='on_3b')
-    pfx_x = FloatField()
-    pfx_z = FloatField()
-    pitch_type = CharField()
-    px = FloatField()
-    pz = FloatField()
-    spin = FloatField()
-    spin_angle = FloatField()
-    start_speed = FloatField()
-    strike = IntegerField()
-    sv = IntegerField(db_column='sv_id')
-    timestamp = DateTimeField()
-    type = CharField()
-    type_confidence = FloatField()
-    vx0 = FloatField()
-    vy0 = FloatField()
-    vz0 = FloatField()
-    x = FloatField()
-    x0 = FloatField()
-    y = FloatField()
-    y0 = FloatField()
-    z0 = FloatField()
+    my_pfx_x = FloatField(null=True)
+    my_pfx_z = FloatField(null=True)
+    my_pitch_type = IntegerField(null=True)
+    nasty = IntegerField(null=True)
+    on_1b = ForeignKeyField(Players, related_name='runner_1b', null=True)
+    on_2b = ForeignKeyField(Players, related_name='runner_2b', null=True)
+    on_3b = ForeignKeyField(Players, related_name='runner_3b', null=True)
+    pfx_x = FloatField(null=True)
+    pfx_z = FloatField(null=True)
+    pitch_type = CharField(null=True)
+    px = FloatField(null=True)
+    pz = FloatField(null=True)
+    spin = FloatField(null=True)
+    spin_angle = FloatField(null=True)
+    start_speed = FloatField(null=True)
+    strike = IntegerField(null=True)
+    sv = IntegerField(db_column='sv_id',null=True)
+    timestamp = DateTimeField(null=True)
+    type = CharField(null=True)
+    type_confidence = FloatField(null=True)
+    vx0 = FloatField(null=True)
+    vy0 = FloatField(null=True)
+    vz0 = FloatField(null=True)
+    x = FloatField(null=True)
+    x0 = FloatField(null=True)
+    y = FloatField(null=True)
+    y0 = FloatField(null=True)
+    z0 = FloatField(null=True)
 
-    class Meta:
-        db_table = 'pitches'
+    #class Meta:
+        #db_table = 'pitches'
 
+def create_tables():
+    database.connect()
+    database.create_tables([Players, GameTypes, Stadiums, Umpires,
+                            Games, Atbats, PitchTypes, Pitches])
